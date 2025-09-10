@@ -113,23 +113,79 @@ class AVLTreeController:
         return root
 
     # -------------------------
-    # RECORRIDO INORDER
+    # RECORRIDO POSTORDER
     # -------------------------
-    # -------------------------
-    # RECORRIDO INORDER
-    # -------------------------
-    def inorder(self, node=None, is_root_call=True):
-        # Primera llamada: si no se pasa nodo, se empieza en la raíz
-        if is_root_call:
-            node = self.model.get_root()
+    def postorder(self):
+        """
+        Punto de entrada al recorrido postorder.
+        Llama a la función recursiva comenzando desde la raíz.
+        """
+        root = self.model.get_root()
+        return self._postorder(root)
 
-        # Caso base
+    def _postorder(self, node):
+        """
+        Función recursiva que realiza el recorrido postorder.
+        """
         if node is None:
             return []
 
-        # Recursión solo si los hijos existen
-        left = self.inorder(node.get_left(), False) if node.get_left() else []
+        # Recursión sobre subárbol izquierdo
+        left = self._postorder(node.get_left())
+
+        # Recursión sobre subárbol derecho
+        right = self._postorder(node.get_right())
+
+        # Nodo actual al final
         current = [f"({node.get_x_min()}, {node.get_y_min()})"]
-        right = self.inorder(node.get_right(), False) if node.get_right() else []
+
+        return left + right + current
+
+    # -------------------------
+    # RECORRIDO INORDER
+    # -------------------------
+    def inorder(self):
+        """
+        Punto de entrada al recorrido inorder.
+        Llama a la función recursiva comenzando desde la raíz.
+        """
+        root = self.model.get_root()
+        return self._inorder(root)
+
+    def _inorder(self, node):
+        """
+        Función recursiva que realiza el recorrido inorder.
+        """
+        if node is None:
+            return []
+
+        # Recursión sobre subárbol izquierdo
+        left = self._inorder(node.get_left())
+
+        # Nodo actual
+        current = [f"({node.get_x_min()}, {node.get_y_min()})"]
+
+        # Recursión sobre subárbol derecho
+        right = self._inorder(node.get_right())
 
         return left + current + right
+
+    # -------------------------
+    # RECORRIDO PREORDER
+    # -------------------------
+    def preorder(self):
+        """
+        Punto de entrada al recorrido preorder.
+        """
+        root = self.model.get_root()
+        return self._preorder_recursive(root)
+
+    def _preorder_recursive(self, node):
+        if node is None:
+            return []
+
+        current = [f"({node.get_x_min()}, {node.get_y_min()})"]
+        left = self._preorder_recursive(node.get_left())
+        right = self._preorder_recursive(node.get_right())
+
+        return current + left + right

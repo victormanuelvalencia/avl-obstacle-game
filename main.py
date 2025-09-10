@@ -14,11 +14,17 @@ if __name__ == "__main__":
     controller.insert(30, 0, 3, 2, "árbol")
     controller.insert(35, 0, 3, 2, "árbol")
     controller.insert(23, 0, 3, 2, "árbol")
-    controller.insert(18, 0, 3, 2, "árbol")
+    controller.insert(20, 0, 3, 2, "árbol")
     controller.insert(28, 0, 3, 2, "árbol")
 
     print("Recorrido inorder (por x luego y):")
     print(controller.inorder())
+
+    print("Recorrido preorder (por x luego y):")
+    print(controller.preorder())
+
+    print("Recorrido postorder (por x luego y):")
+    print(controller.postorder())
 
     # Graficar árbol
     plotter = TreeView(controller)
