@@ -189,3 +189,50 @@ class AVLTreeController:
         right = self._preorder_recursive(node.get_right())
 
         return current + left + right
+
+    def range_query(self, x_min, x_max, y_min, y_max):
+        """
+        Devuelve una lista de nodos (o coordenadas) cuyos (x_min, y_min)
+        estén dentro del rango definido por:
+        x_min <= nodo.x_min <= x_max
+        y_min <= nodo.y_min <= y_max
+        """
+        result = []
+        self._range_query(self.model.get_root(), x_min, x_max, y_min, y_max, result)
+        return result
+
+    def _range_query(self, node, x_min, x_max, y_min, y_max, result):
+        if not node:
+            return
+
+        # Si todo el subárbol izquierdo está fuera del rango por la derecha
+        if node.get_x_min() > x_min:
+            self._range_query(node.get_left(), x_min, x_max, y_min, y_max, result)
+
+        # --- Verificar si el nodo actual está dentro del rango ---
+        if (x_min <= node.get_x_min() <= x_max) and (y_min <= node.get_y_min() <= y_max):
+            result.append({
+                "x_min": node.get_x_min(),
+                "y_min": node.get_y_min(),
+                "x_max": node.get_x_max(),
+                "y_max": node.get_y_max(),
+                "tipo": node.get_obstacle()
+            })
+
+        # Si todo el subárbol derecho está fuera del rango por la izquierda
+        if node.get_x_min() < x_max:
+            self._range_query(node.get_right(), x_min, x_max, y_min, y_max, result)
+
+    def print_range_query(self, x_min, x_max, y_min, y_max):
+        """Imprime los obstáculos dentro del rango dado."""
+        resultados = self.range_query(x_min, x_max, y_min, y_max)
+
+        print(f"\n🔎 Obstáculos en el rango x=[{x_min}, {x_max}], y=[{y_min}, {y_max}]:")
+        if not resultados:
+            print(" (Ninguno encontrado)")
+            return
+
+        for obs in resultados:
+            print(f" - Objeto: {obs['tipo']} | Coords: ({obs['x_min']}, {obs['y_min']}) "
+                  f"- ({obs['x_max']}, {obs['y_max']})")
+

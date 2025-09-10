@@ -8,7 +8,7 @@ class AVLNode:
         self._y_min = y_min      # Coordenada inferior
         self._x_max = x_max      # Coordenada derecha
         self._y_max = y_max      # Coordenada superior
-        self.obstacle = obstacle        # Tipo de obstáculo (ej: roca, hueco, barrera)
+        self._obstacle = obstacle        # Tipo de obstáculo (ej: roca, hueco, barrera)
 
         # Atributos para AVL
         self._height = 1
@@ -22,7 +22,7 @@ class AVLNode:
     def get_y_min(self): return self._y_min
     def get_x_max(self): return self._x_max
     def get_y_max(self): return self._y_max
-    def get_tipo(self): return self._tipo
+    def get_obstacle(self): return self._obstacle
     def get_height(self): return self._height
     def get_left(self): return self._left
     def get_right(self): return self._right
@@ -34,7 +34,7 @@ class AVLNode:
     def set_y_min(self, value): self._y_min = value
     def set_x_max(self, value): self._x_max = value
     def set_y_max(self, value): self._y_max = value
-    def set_tipo(self, value): self._tipo = value
+    def set_obstacle(self, value): self._obtacle = value
     def set_height(self, value): self._height = value
     def set_left(self, node): self._left = node
     def set_right(self, node): self._right = node

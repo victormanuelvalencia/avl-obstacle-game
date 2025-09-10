@@ -26,6 +26,12 @@ if __name__ == "__main__":
     print("Recorrido postorder (por x luego y):")
     print(controller.postorder())
 
+    # Definir rango
+    x_min, x_max, y_min, y_max = 15, 30, 0, 3
+
+    # Imprimir directamente con la nueva función
+    controller.print_range_query(x_min, x_max, y_min, y_max)
+
     # Graficar árbol
     plotter = TreeView(controller)
     plotter.plot()
