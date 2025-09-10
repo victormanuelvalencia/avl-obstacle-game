@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx  # Para manejar nodos y edges más fácil
 
-class tree_view:
+class TreeView:
     def __init__(self, controller):
         self.controller = controller
 

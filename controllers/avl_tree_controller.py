@@ -1,6 +1,6 @@
 from models.avl_tree import AVLNode, AVLTree
 
-class AVL_tree_Controller:
+class AVLTreeController:
     def __init__(self, model: AVLTree):
         self.model = model
 

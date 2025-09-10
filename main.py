@@ -1,10 +1,10 @@
 from models.avl_tree import AVLTree
-from controllers.avl_tree_controller import AVL_tree_Controller
-from views.tree_view import tree_view
+from controllers.avl_tree_controller import AVLTreeController
+from views.tree_view import TreeView
 
 if __name__ == "__main__":
     tree = AVLTree()
-    controller = AVL_tree_Controller(tree)
+    controller = AVLTreeController(tree)
 
     # Insertar obstáculos
     controller.insert(20, 2, 12, 4, "roca")
@@ -21,5 +21,5 @@ if __name__ == "__main__":
     print(controller.inorder())
 
     # Graficar árbol
-    plotter = tree_view(controller)
+    plotter = TreeView(controller)
     plotter.plot()
