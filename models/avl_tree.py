@@ -34,7 +34,7 @@ class AVLNode:
     def set_y_min(self, value): self._y_min = value
     def set_x_max(self, value): self._x_max = value
     def set_y_max(self, value): self._y_max = value
-    def set_obstacle(self, value): self._obtacle = value
+    def set_obstacle(self, value): self._obstacle = value
     def set_height(self, value): self._height = value
     def set_left(self, node): self._left = node
     def set_right(self, node): self._right = node
