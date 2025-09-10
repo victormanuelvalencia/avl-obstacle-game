@@ -1,94 +1,55 @@
 class AVLNode:
     """
-    Nodo del árbol AVL
+    Nodo del árbol AVL que representa un obstáculo en el juego.
+    Cada obstáculo ocupa un área rectangular definida por coordenadas.
     """
-    def __init__(self, key, data=None):
-        self.key = key        # Coordenada (x, y)
-        self.data = data      # Objeto asociado (ej: obstáculo)
-        self.height = 1
-        self.left = None
-        self.right = None
+    def __init__(self, x_min, y_min, x_max, y_max, obstacle):
+        self._x_min = x_min      # Coordenada izquierda del obstáculo
+        self._y_min = y_min      # Coordenada inferior
+        self._x_max = x_max      # Coordenada derecha
+        self._y_max = y_max      # Coordenada superior
+        self.obstacle = obstacle        # Tipo de obstáculo (ej: roca, hueco, barrera)
+
+        # Atributos para AVL
+        self._height = 1
+        self._left = None
+        self._right = None
+
+    # ------------------------
+    # Getters
+    # ------------------------
+    def get_x_min(self): return self._x_min
+    def get_y_min(self): return self._y_min
+    def get_x_max(self): return self._x_max
+    def get_y_max(self): return self._y_max
+    def get_tipo(self): return self._tipo
+    def get_height(self): return self._height
+    def get_left(self): return self._left
+    def get_right(self): return self._right
+
+    # ------------------------
+    # Setters
+    # ------------------------
+    def set_x_min(self, value): self._x_min = value
+    def set_y_min(self, value): self._y_min = value
+    def set_x_max(self, value): self._x_max = value
+    def set_y_max(self, value): self._y_max = value
+    def set_tipo(self, value): self._tipo = value
+    def set_height(self, value): self._height = value
+    def set_left(self, node): self._left = node
+    def set_right(self, node): self._right = node
 
 
 class AVLTree:
     """
-    Implementación del Árbol AVL para gestionar obstáculos
+    Árbol AVL que almacena obstáculos del juego.
+    El criterio de comparación para insertar/balancear es:
+    - Primero x_min
+    - En caso de empate, y_min
     """
     def __init__(self):
-        self.root = None
+        self._root = None
 
-    # ------------------------
-    # Inserción
-    # ------------------------
-    def insert(self, key, data=None):
-        self.root = self._insert(self.root, key, data)
-
-    def _insert(self, node, key, data=None):
-        pass
-
-    # ------------------------
-    # Eliminación
-    # ------------------------
-    def delete(self, key):
-        self.root = self._delete(self.root, key)
-
-    def _delete(self, node, key):
-        pass
-
-    def _get_min(self, node):
-        pass
-
-    # ------------------------
-    # Recorridos en profundidad (DFS)
-    # ------------------------
-    def inorder(self):
-        pass
-
-    def _inorder(self, node, result):
-        pass
-
-    def preorder(self):
-        pass
-
-    def _preorder(self, node, result):
-        pass
-
-    def postorder(self):
-        pass
-
-    def _postorder(self, node, result):
-        pass
-
-    # ------------------------
-    # Recorrido en anchura (BFS)
-    # ------------------------
-    def breadth_first(self):
-        pass
-
-    # ------------------------
-    # Consulta en rango
-    # ------------------------
-    def range_query(self, x_min, x_max, y_min, y_max):
-        pass
-
-    def _range_query(self, node, x_min, x_max, y_min, y_max, result):
-        pass
-
-    # ------------------------
-    # Funciones de balanceo
-    # ------------------------
-    def _height(self, node):
-        pass
-
-    def _balance_factor(self, node):
-        pass
-
-    def _rotate_left(self, node):
-        pass
-
-    def _rotate_right(self, node):
-        pass
-
-    def _balance(self, node):
-        pass
-
+    # Getter y Setter para la raíz
+    def get_root(self): return self._root
+    def set_root(self, node): self._root = node

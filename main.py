@@ -1,5 +1,25 @@
-def main():
-    print("🚀 AVL Road Racer - Proyecto iniciado")
+from models.avl_tree import AVLTree
+from controllers.avl_tree_controller import AVL_tree_Controller
+from views.tree_view import tree_view
 
 if __name__ == "__main__":
-    main()
+    tree = AVLTree()
+    controller = AVL_tree_Controller(tree)
+
+    # Insertar obstáculos
+    controller.insert(20, 2, 12, 4, "roca")
+    controller.insert(15, 1, 6, 3, "hueco")
+    controller.insert(10, 3, 18, 6, "barrera")
+    controller.insert(25, 0, 3, 2, "árbol")
+    controller.insert(30, 0, 3, 2, "árbol")
+    controller.insert(35, 0, 3, 2, "árbol")
+    controller.insert(23, 0, 3, 2, "árbol")
+    controller.insert(18, 0, 3, 2, "árbol")
+    controller.insert(28, 0, 3, 2, "árbol")
+
+    print("Recorrido inorder (por x luego y):")
+    print(controller.inorder())
+
+    # Graficar árbol
+    plotter = tree_view(controller)
+    plotter.plot()
