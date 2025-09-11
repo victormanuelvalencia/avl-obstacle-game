@@ -3,12 +3,13 @@ class AVLNode:
     Nodo del árbol AVL que representa un obstáculo en el juego.
     Cada obstáculo ocupa un área rectangular definida por coordenadas.
     """
-    def __init__(self, x_min, y_min, x_max, y_max, obstacle):
+    def __init__(self, x_min, y_min, x_max, y_max, obstacle, parent = None):
         self._x_min = x_min      # Coordenada izquierda del obstáculo
         self._y_min = y_min      # Coordenada inferior
         self._x_max = x_max      # Coordenada derecha
         self._y_max = y_max      # Coordenada superior
         self._obstacle = obstacle        # Tipo de obstáculo (ej: roca, hueco, barrera)
+        self.parent = parent
 
         # Atributos para AVL
         self._height = 1
@@ -26,6 +27,7 @@ class AVLNode:
     def get_height(self): return self._height
     def get_left(self): return self._left
     def get_right(self): return self._right
+    def get_parent(self): return self.parent
 
     # ------------------------
     # Setters
@@ -38,6 +40,7 @@ class AVLNode:
     def set_height(self, value): self._height = value
     def set_left(self, node): self._left = node
     def set_right(self, node): self._right = node
+    def set_parent(self, node): self.parent = node
 
 
 class AVLTree:

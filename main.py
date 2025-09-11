@@ -16,7 +16,12 @@ if __name__ == "__main__":
     controller.insert(23, 0, 3, 2, "árbol")
     controller.insert(20, 0, 3, 2, "árbol")
     controller.insert(28, 0, 3, 2, "árbol")
-
+    controller.insert(32, 0, 3, 2, "árbol")
+    controller.insert(5, 0, 3, 2, "árbol")
+    controller.insert(2, 0, 3, 2, "árbol")
+    controller.insert(38, 0, 3, 2, "árbol")
+    controller.insert(8, 0, 3, 2, "árbol")
+    controller.delete(15,1)
     print("Recorrido inorder (por x luego y):")
     print(controller.inorder())
 
@@ -25,6 +30,13 @@ if __name__ == "__main__":
 
     print("Recorrido postorder (por x luego y):")
     print(controller.postorder())
+
+    node = controller.search(35, 0)
+    if node:
+        print("Node found")
+        print("x = ", node.get_x_min(), "y = " , node.get_y_min(), "at heigh ", node.get_height())
+    else:
+        print("No node found")
 
     # Definir rango
     x_min, x_max, y_min, y_max = 15, 30, 0, 3
