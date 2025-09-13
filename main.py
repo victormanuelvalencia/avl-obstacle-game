@@ -1,27 +1,28 @@
 from models.avl_tree import AVLTree
 from controllers.avl_tree_controller import AVLTreeController
+from utils.file_admin import read_json
+from views.game import GameView
 from views.tree_view import TreeView
 
 if __name__ == "__main__":
     tree = AVLTree()
     controller = AVLTreeController(tree)
 
-    # Insertar obstáculos
-    controller.insert(20, 2, 12, 4, "roca")
-    controller.insert(15, 1, 6, 3, "hueco")
-    controller.insert(10, 3, 18, 6, "barrera")
-    controller.insert(25, 0, 3, 2, "árbol")
-    controller.insert(30, 0, 3, 2, "árbol")
-    controller.insert(35, 0, 3, 2, "árbol")
-    controller.insert(23, 0, 3, 2, "árbol")
-    controller.insert(20, 0, 3, 2, "árbol")
-    controller.insert(28, 0, 3, 2, "árbol")
-    controller.insert(32, 0, 3, 2, "árbol")
-    controller.insert(5, 0, 3, 2, "árbol")
-    controller.insert(2, 0, 3, 2, "árbol")
-    controller.insert(38, 0, 3, 2, "árbol")
-    controller.insert(8, 0, 3, 2, "árbol")
-    controller.delete(15,1)
+    # Leer configuración desde JSON
+    data = read_json("config/settings.json")
+    config = data["config"]
+
+    # Iniciar la vista del juego
+    game = GameView(config)
+    game.run()
+
+    # 1. Leer archivo JSON
+    data = read_json("config/settings.json")
+
+    # 2. Cargar obstáculos en el árbol
+    controller.load_from_list(data["obstacles"])
+
+
     print("Recorrido inorder (por x luego y):")
     print(controller.inorder())
 
@@ -47,3 +48,5 @@ if __name__ == "__main__":
     # Graficar árbol
     plotter = TreeView(controller)
     plotter.plot()
+
+

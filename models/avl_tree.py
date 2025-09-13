@@ -16,6 +16,32 @@ class AVLNode:
         self._left = None
         self._right = None
 
+
+    """
+    Converts the node to dict to save it in json
+    """
+    def to_dict(self):
+        return {
+            "x_min": self._x_min,
+            "y_min": self._y_min,
+            "x_max": self._x_max,
+            "y_max": self._y_max,
+            "obstacle": self._obstacle
+        }
+
+    """
+    Build the node from the dict
+    """
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            x_min=data["x_min"],
+            y_min=data["y_min"],
+            x_max=data["x_max"],
+            y_max=data["y_max"],
+            obstacle=data["obstacle"]
+        )
+
     # ------------------------
     # Getters
     # ------------------------

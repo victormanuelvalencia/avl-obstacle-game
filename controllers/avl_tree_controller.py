@@ -456,3 +456,22 @@ class AVLTreeController:
             print(f" - Objeto: {obs['tipo']} | Coords: ({obs['x_min']}, {obs['y_min']}) "
                   f"- ({obs['x_max']}, {obs['y_max']})")
 
+    # ------------------- #
+
+    # -------------------------
+    # Load the nodes from the json
+    # -------------------------
+
+    def load_from_list(self, obstacles: list):
+        """
+        Carga múltiples obstáculos en el árbol desde una lista de diccionarios.
+        """
+        for obs in obstacles:
+            node = AVLNode.from_dict(obs)
+            self.insert(
+                node.get_x_min(),
+                node.get_y_min(),
+                node.get_x_max(),
+                node.get_y_max(),
+                node.get_obstacle()
+            )
