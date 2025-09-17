@@ -18,11 +18,10 @@ class GameView:
             x_max=100,
             y_max=(self.HEIGHT // 2) + 30,
             energy=100,
-            speed_x=config["car_speed"],
+            speed_x=0,
             refresh_time=config["refresh_time"],
             speed_y=5,
             jump_height=config["jump_height"],
-            color=(0, 0, 255)  # azul por defecto
         )
 
         # Crear controlador que maneja la lógica
@@ -38,10 +37,18 @@ class GameView:
         self.blue_car = pygame.transform.scale(self.blue_car, (width, height))
         self.red_car = pygame.transform.scale(self.red_car, (width, height))
 
+        # Offset para carretera infinita
+        self.road_offset = 0
+
+        # Lista de obstáculos
+        self.obstacles = []
+
     def run(self):
         running = True
+        spawn_timer = 0  # para controlar aparición de obstáculos
+
         while running:
-            self.screen.fill((200, 200, 200))  # Fondo gris (carretera)
+            self.screen.fill((150, 150, 150))  # Fondo gris (carretera)
 
             # Eventos
             for event in pygame.event.get():
@@ -57,11 +64,15 @@ class GameView:
                 if keys[pygame.K_SPACE]:
                     self.car.set_jumping(True)
 
-            # Movimiento automático
-            self.car_controller.move_forward()
-
             # Salto
             self.car_controller.jump()
+
+            self.road_offset -= 5
+            if self.road_offset <= -self.WIDTH:
+                self.road_offset = 0
+
+                pygame.draw.rect(self.screen, (100, 100, 100), (self.road_offset, 200, self.WIDTH, 200))
+                pygame.draw.rect(self.screen, (100, 100, 100), (self.road_offset + self.WIDTH, 200, self.WIDTH, 200))
 
             # Seleccionar imagen según estado
             if self.car.is_jumping():
