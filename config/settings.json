@@ -3,8 +3,7 @@
         "road_length": 1000,
         "car_speed": 5,
         "refresh_time": 200,
-        "jump_height": 50,
-        "car_color": "red"
+        "jump_height": 20
     },
 
     "obstacle_types": {

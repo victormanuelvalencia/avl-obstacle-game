@@ -28,9 +28,15 @@ class GameView:
         # Crear controlador que maneja la lógica
         self.car_controller = CarController(self.car)
 
-        # Colores
-        self.base_color = (0, 0, 255)   # Azul
-        self.jump_color = (255, 0, 0)   # Rojo
+        # Cargar imágenes del carro
+        self.blue_car = pygame.image.load("views/assets/blue_car.png").convert_alpha()
+        self.red_car = pygame.image.load("views/assets/red_car.png").convert_alpha()
+
+        # Escalar imágenes al tamaño del carro
+        width = self.car.get_x_max() - self.car.get_x_min()
+        height = self.car.get_y_max() - self.car.get_y_min()
+        self.blue_car = pygame.transform.scale(self.blue_car, (width, height))
+        self.red_car = pygame.transform.scale(self.red_car, (width, height))
 
     def run(self):
         running = True
@@ -57,15 +63,14 @@ class GameView:
             # Salto
             self.car_controller.jump()
 
-            # Dibujar carrito
-            color = self.jump_color if self.car.is_jumping() else self.base_color
-            rect = pygame.Rect(
-                self.car.get_x_min(),
-                self.car.get_y_min(),
-                self.car.get_x_max() - self.car.get_x_min(),
-                self.car.get_y_max() - self.car.get_y_min()
-            )
-            pygame.draw.rect(self.screen, color, rect)
+            # Seleccionar imagen según estado
+            if self.car.is_jumping():
+                car_img = self.red_car
+            else:
+                car_img = self.blue_car
+
+            # Dibujar carro
+            self.screen.blit(car_img, (self.car.get_x_min(), self.car.get_y_min()))
 
             # Mostrar energía en pantalla
             font = pygame.font.SysFont(None, 30)
@@ -75,4 +80,4 @@ class GameView:
             pygame.display.flip()
             self.clock.tick(60)
 
-        pygame.quit()
+    pygame.quit()
