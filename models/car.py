@@ -1,3 +1,5 @@
+import pygame
+
 class Car:
     """
     Modelo del carrito (solo estado y configuración).
@@ -18,6 +20,7 @@ class Car:
         self._jump_height = jump_height
         self._color = color
         self._is_jumping = False
+        self._jump_offset = 0
 
     # --- Getters ---
     def get_x1(self): return self._x1
@@ -31,6 +34,7 @@ class Car:
     def get_jump_height(self): return self._jump_height
     def get_color(self): return self._color
     def is_jumping(self): return self._is_jumping
+    def get_jump_offset(self): return self._jump_offset
 
     # --- Setters ---
     def set_x1(self, value): self._x1 = value
@@ -44,3 +48,14 @@ class Car:
     def set_jump_height(self, value): self._jump_height = value
     def set_color(self, value): self._color = value
     def set_jumping(self, value): self._is_jumping = value
+    def set_jump_offset(self, value): self._jump_offset = value
+
+    # --- Rectángulo de colisión dinámico ---
+    def get_collision_rect(self):
+        # Siempre devuelve la base del carro, ignorando salto visual
+        width = self._x2 - self._x1
+        height = self._y2 - self._y1
+        return pygame.Rect(self._x1, self._y1, width, height)
+
+    def decrease_energy(self, amount):
+        self._energy = max(self._energy - amount, 0)

@@ -22,6 +22,19 @@ class Obstacle:
         }
         """
         self.type = data["type"]
+        self.hit = False
+
+        # Asignar daño según tipo de obstáculo
+        damage_map = {
+            "cone": 5,
+            "rock": 15,
+            "oil": 10,
+            "hole": 20,
+            "barrera": 12
+        }
+        self.damage = damage_map.get(self.type, 10)  # daño por defecto 10
+
+        # Cargar imagen
         self.image = pygame.image.load(data["sprite"]).convert_alpha()
 
         # Rectángulo de colisión

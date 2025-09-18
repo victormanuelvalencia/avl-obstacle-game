@@ -46,19 +46,12 @@ class GameView:
 
         # Obstáculos cargados desde JSON
         data = read_json("config/obstacles.json")
-        self.obstacles = []
-        for obs in data["obstacles"]:
-            sprite = pygame.image.load(obs["sprite"]).convert_alpha()
-            rect = pygame.Rect(obs["x1"], obs["y1"], obs["x2"] - obs["x1"], obs["y2"] - obs["y1"])
-            self.obstacles.append({"sprite": sprite, "rect": rect})
-
-    def run(self):
-        # Cargar obstáculos DESPUÉS de inicializar pygame
-        data = read_json("config/obstacles.json")
         self.obstacles = [Obstacle(obs) for obs in data["obstacles"]]
 
+    def run(self):
         running = True
         dx = self.car.get_speed_x() or 5  # velocidad de scroll
+
         while running:
             self.screen.fill((150, 150, 150))  # Fondo gris (carretera)
 
@@ -92,9 +85,15 @@ class GameView:
                 obs.update(dx)
                 obs.draw(self.screen)
 
+                # Colisión solo si NO está saltando y aún no fue golpeado
+                if not self.car.is_jumping() and self.car.get_collision_rect().colliderect(obs.rect):
+                    if not obs.hit:
+                        self.car.decrease_energy(obs.damage)
+                        obs.hit = True
+
             # Seleccionar imagen del carrito
             car_img = self.red_car if self.car.is_jumping() else self.blue_car
-            self.screen.blit(car_img, (self.car.get_x1(), self.car.get_y1()))
+            self.screen.blit(car_img, (self.car.get_x1(), self.car.get_y1() + self.car.get_jump_offset()))
 
             # Mostrar energía
             font = pygame.font.SysFont(None, 30)
