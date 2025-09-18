@@ -1,8 +1,10 @@
 from models.avl_tree import AVLNode, AVLTree
+from models.obstacle import Obstacle
+
 
 class AVLTreeController:
-    def __init__(self, model: AVLTree):
-        self.model = model
+    def __init__(self, tree):
+        self.tree = tree
 
     # -------------------------
     # ALTURA Y BALANCE
@@ -38,64 +40,64 @@ class AVLTreeController:
     # ------------------------
     # Search
     # ------------------------
-    def search(self, x_min, y_min):
+    def search(self, x1, y1):
         """
-        Search for an obstacle in the tree by coordinates (x_min, y_min in case of draw).
+        Search for an obstacle in the tree by coordinates (x1, y1 in case of draw).
         It returns the node if found, otherwise return None.
         """
 
         # Looking for the root, and if is empty it returns a None
-        if self.model.get_root() is None:
+        if self.tree.get_root() is None:
             print("The tree is empty.")
             return None
         else:
-            # if there is any root, then it calls the recursive function that will look for the x_min or y_min
+            # if there is any root, then it calls the recursive function that will look for the x1 or y1
             # value
-            return self._search(self.model.get_root(), x_min, y_min)
+            return self._search(self.tree.get_root(), x1, y1)
 
-    def _search(self, current_node, x_min, y_min):
+    def _search(self, current_node, x1, y1):
         # Case: there is no nodes
         if current_node is None:
             return None
 
         # Case: found the exact same values and return the node
-        if (x_min == current_node.get_x_min() and
-                y_min == current_node.get_y_min()):
+        if (x1 == current_node.get_x1() and
+                y1 == current_node.get_y1()):
             return current_node
 
         # If it doesn't find the values then search in the left subtree
-        if (x_min < current_node.get_x_min() or
+        if (x1 < current_node.get_x1() or
                 # in case of x draw
-                (x_min == current_node.get_x_min() and y_min < current_node.get_y_min())):
-            return self._search(current_node.get_left(), x_min, y_min)
+                (x1 == current_node.get_x1() and y1 < current_node.get_y1())):
+            return self._search(current_node.get_left(), x1, y1)
 
         # Otherwise, search in the right subtree
-        return self._search(current_node.get_right(), x_min, y_min)
+        return self._search(current_node.get_right(), x1, y1)
 
     # -------------------------
     # Insert
     # -------------------------
-    def insert(self, x_min, y_min, x_max, y_max, obstacle):
+    def insert(self, x1, y1, x2, y2, obstacle):
         # Searching if it already exists
-        node = self.search(x_min, y_min)
+        node = self.search(x1, y1)
 
         if node is not None:
-            print(f"⚠️ Obstacle at ({x_min}, {y_min}) already exists.")
+            print(f"⚠️ Obstacle at ({x1}, {y1}) already exists.")
             return
         else:
             # If it doesn't exist, then create the new node
-            new_node = AVLNode(x_min, y_min, x_max, y_max, obstacle)
+            new_node = AVLNode(x1, y1, x2, y2, obstacle)
 
             # If root is empty, insert here the new node
-            if self.model.get_root() is None:
-                self.model.set_root(new_node)
+            if self.tree.get_root() is None:
+                self.tree.set_root(new_node)
             else:
                 # If there is a root, the calls Recursive insert
-                root = self.model.get_root()
+                root = self.tree.get_root()
                 # From the root to the leafs
                 root = self._insert(root, new_node, parent = None)
                 # This is in case we need a rebalance, we update the new root
-                self.model.set_root(root)
+                self.tree.set_root(root)
 
     def _insert(self, root, new_node: AVLNode, parent: AVLNode):
         # Caso base: espacio vacío → insertar aquí
@@ -103,9 +105,9 @@ class AVLTreeController:
             new_node.set_parent(parent)  # 👈 asignamos el padre
             return new_node
 
-        # Comparación por (x_min, y_min)
-        if (new_node.get_x_min() < root.get_x_min() or
-                (new_node.get_x_min() == root.get_x_min() and new_node.get_y_min() < root.get_y_min())):
+        # Comparación por (x1, y1)
+        if (new_node.get_x1() < root.get_x1() or
+                (new_node.get_x1() == root.get_x1() and new_node.get_y1() < root.get_y1())):
             root.set_left(self._insert(root.get_left(), new_node, root))
         else:
             root.set_right(self._insert(root.get_right(), new_node, root))
@@ -213,7 +215,7 @@ class AVLTreeController:
         parent = old_node.get_parent()
 
         if parent is None:
-            self.model.set_root(new_node)
+            self.tree.set_root(new_node)
         elif old_node == parent.get_left():
             parent.set_left(new_node)
         else:
@@ -226,10 +228,10 @@ class AVLTreeController:
     # Delete
     # -------------------------
 
-    def delete(self, x_min, y_min):
-        node = self.search(x_min, y_min)
+    def delete(self, x1, y1):
+        node = self.search(x1, y1)
         if node is None:
-            print(f"⚠️ Node at ({x_min}, {y_min}) not found.")
+            print(f"⚠️ Node at ({x1}, {y1}) not found.")
             return
         self._delete(node)
 
@@ -295,7 +297,7 @@ class AVLTreeController:
             else:
                 y.get_parent().set_right(y)
         else:
-            self.model.set_root(y)
+            self.tree.set_root(y)
 
         # Actualizar alturas
         self._update_height(node)
@@ -324,7 +326,7 @@ class AVLTreeController:
             else:
                 y.get_parent().set_right(y)
         else:
-            self.model.set_root(y)
+            self.tree.set_root(y)
 
         # Actualizar alturas
         self._update_height(node)
@@ -340,7 +342,7 @@ class AVLTreeController:
         Punto de entrada al recorrido postorder.
         Llama a la función recursiva comenzando desde la raíz.
         """
-        root = self.model.get_root()
+        root = self.tree.get_root()
         return self._postorder(root)
 
     def _postorder(self, node):
@@ -357,7 +359,7 @@ class AVLTreeController:
         right = self._postorder(node.get_right())
 
         # Nodo actual al final
-        current = [f"({node.get_x_min()}, {node.get_y_min()})"]
+        current = [f"({node.get_x1()}, {node.get_y1()})"]
 
         return left + right + current
 
@@ -369,7 +371,7 @@ class AVLTreeController:
         Punto de entrada al recorrido inorder.
         Llama a la función recursiva comenzando desde la raíz.
         """
-        root = self.model.get_root()
+        root = self.tree.get_root()
         return self._inorder(root)
 
     def _inorder(self, node):
@@ -383,7 +385,7 @@ class AVLTreeController:
         left = self._inorder(node.get_left())
 
         # Nodo actual
-        current = [f"({node.get_x_min()}, {node.get_y_min()})"]
+        current = [f"({node.get_x1()}, {node.get_y1()})"]
 
         # Recursión sobre subárbol derecho
         right = self._inorder(node.get_right())
@@ -397,81 +399,77 @@ class AVLTreeController:
         """
         Punto de entrada al recorrido preorder.
         """
-        root = self.model.get_root()
+        root = self.tree.get_root()
         return self._preorder_recursive(root)
 
     def _preorder_recursive(self, node):
         if node is None:
             return []
 
-        current = [f"({node.get_x_min()}, {node.get_y_min()})"]
+        current = [f"({node.get_x1()}, {node.get_y1()})"]
         left = self._preorder_recursive(node.get_left())
         right = self._preorder_recursive(node.get_right())
 
         return current + left + right
 
-    def range_query(self, x_min, x_max, y_min, y_max):
+    def range_query(self, x1, x2, y1, y2):
         """
-        Devuelve una lista de nodos (o coordenadas) cuyos (x_min, y_min)
+        Devuelve una lista de nodos (o coordenadas) cuyos (x1, y1)
         estén dentro del rango definido por:
-        x_min <= nodo.x_min <= x_max
-        y_min <= nodo.y_min <= y_max
+        x1 <= nodo.x1 <= x2
+        y1 <= nodo.y1 <= y2
         """
         result = []
-        self._range_query(self.model.get_root(), x_min, x_max, y_min, y_max, result)
+        self._range_query(self.tree.get_root(), x1, x2, y1, y2, result)
         return result
 
-    def _range_query(self, node, x_min, x_max, y_min, y_max, result):
+    def _range_query(self, node, x1, x2, y1, y2, result):
         if not node:
             return
 
         # Si todo el subárbol izquierdo está fuera del rango por la derecha
-        if node.get_x_min() > x_min:
-            self._range_query(node.get_left(), x_min, x_max, y_min, y_max, result)
+        if node.get_x1() > x1:
+            self._range_query(node.get_left(), x1, x2, y1, y2, result)
 
         # --- Verificar si el nodo actual está dentro del rango ---
-        if (x_min <= node.get_x_min() <= x_max) and (y_min <= node.get_y_min() <= y_max):
+        if (x1 <= node.get_x1() <= x2) and (y1 <= node.get_y1() <= y2):
             result.append({
-                "x_min": node.get_x_min(),
-                "y_min": node.get_y_min(),
-                "x_max": node.get_x_max(),
-                "y_max": node.get_y_max(),
+                "x1": node.get_x1(),
+                "y1": node.get_y1(),
+                "x2": node.get_x2(),
+                "y2": node.get_y2(),
                 "tipo": node.get_obstacle()
             })
 
         # Si todo el subárbol derecho está fuera del rango por la izquierda
-        if node.get_x_min() < x_max:
-            self._range_query(node.get_right(), x_min, x_max, y_min, y_max, result)
+        if node.get_x1() < x2:
+            self._range_query(node.get_right(), x1, x2, y1, y2, result)
 
-    def print_range_query(self, x_min, x_max, y_min, y_max):
+    def print_range_query(self, x1, x2, y1, y2):
         """Imprime los obstáculos dentro del rango dado."""
-        resultados = self.range_query(x_min, x_max, y_min, y_max)
+        resultados = self.range_query(x1, x2, y1, y2)
 
-        print(f"\n🔎 Obstáculos en el rango x=[{x_min}, {x_max}], y=[{y_min}, {y_max}]:")
+        print(f"\n🔎 Obstáculos en el rango x=[{x1}, {x2}], y=[{y1}, {y2}]:")
         if not resultados:
             print(" (Ninguno encontrado)")
             return
 
         for obs in resultados:
-            print(f" - Objeto: {obs['tipo']} | Coords: ({obs['x_min']}, {obs['y_min']}) "
-                  f"- ({obs['x_max']}, {obs['y_max']})")
-
-    # ------------------- #
+            print(f" - Objeto: {obs['tipo']} | Coords: ({obs['x1']}, {obs['y1']}) "
+                  f"- ({obs['x2']}, {obs['y2']})")
 
     # -------------------------
     # Load the nodes from the json
     # -------------------------
 
-    def load_from_list(self, obstacles: list):
-        """
-        Carga múltiples obstáculos en el árbol desde una lista de diccionarios.
-        """
-        for obs in obstacles:
-            node = AVLNode.from_dict(obs)
-            self.insert(
-                node.get_x_min(),
-                node.get_y_min(),
-                node.get_x_max(),
-                node.get_y_max(),
-                node.get_obstacle()
-            )
+    def load_from_list(self, obstacles_list):
+        for obs in obstacles_list:
+            try:
+                x1 = obs["x1"]
+                y1 = obs["y1"]
+                x2 = obs["x2"]
+                y2 = obs["y2"]
+                obstacle_obj = Obstacle(obs)
+                self.insert(x1, y1, x2, y2, obstacle_obj)
+            except Exception as e:
+                print(f"[ERROR] No se pudo cargar obstáculo: {obs} -> {e}")

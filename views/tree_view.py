@@ -13,19 +13,19 @@ class TreeView:
             return
 
         # Identificador único (coordenadas del obstáculo)
-        node_id = f"({node.get_x_min()},{node.get_y_min()})"
+        node_id = f"({node.get_x1()},{node.get_y1()})"
 
         graph.add_node(node_id, pos=(x, y))
 
         # Hijo izquierdo
         if node.get_left():
-            left_id = f"({node.get_left().get_x_min()},{node.get_left().get_y_min()})"
+            left_id = f"({node.get_left().get_x1()},{node.get_left().get_y1()})"
             graph.add_edge(node_id, left_id)
             self._add_edges(graph, node.get_left(), pos, x - 1/layer, y - 1, layer + 1)
 
         # Hijo derecho
         if node.get_right():
-            right_id = f"({node.get_right().get_x_min()},{node.get_right().get_y_min()})"
+            right_id = f"({node.get_right().get_x1()},{node.get_right().get_y1()})"
             graph.add_edge(node_id, right_id)
             self._add_edges(graph, node.get_right(), pos, x + 1/layer, y - 1, layer + 1)
 
@@ -33,7 +33,7 @@ class TreeView:
         """
         Dibuja el árbol AVL usando matplotlib y networkx.
         """
-        root = self.controller.model.get_root()
+        root = self.controller.tree.get_root()
         if not root:
             print("⚠️ El árbol está vacío, nada para graficar.")
             return
