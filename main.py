@@ -54,5 +54,3 @@ if __name__ == "__main__":
     plotter.plot()
 
     pygame.quit()
-
-

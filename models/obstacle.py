@@ -45,22 +45,12 @@ class Obstacle:
         self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
 
     def update(self, dx: int):
-        """
-        Mueve el obstáculo en la carretera (scrolling hacia la izquierda).
-        dx: desplazamiento en x (positivo = mover hacia la izquierda).
-        """
         self.rect.x -= dx
 
     def draw(self, screen):
-        """
-        Dibuja el obstáculo en pantalla.
-        """
         screen.blit(self.image, self.rect)
 
     def to_dict(self):
-        """
-        Convierte el obstáculo a dict (para guardar en JSON si es necesario).
-        """
         return {
             "type": self.type,
             "x1": self.rect.left,
