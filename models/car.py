@@ -7,7 +7,7 @@ class Car:
     def __init__(self,
                  x1=0, y1=0, x2=50, y2=30,
                  energy=100,
-                 speed_x=5, refresh_time=200, speed_y=5,
+                 speed_x=1, refresh_time=200, speed_y=1,
                  jump_height=80, color=(0, 0, 255)):
         self._x1 = x1
         self._y1 = y1

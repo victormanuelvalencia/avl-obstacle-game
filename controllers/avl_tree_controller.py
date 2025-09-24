@@ -7,7 +7,7 @@ class AVLTreeController:
         self.tree = tree
 
     # -------------------------
-    # ALTURA Y BALANCE
+    # Balance utils
     # -------------------------
     def _height(self, node):
         # If the node does not exist, its height is 0
@@ -36,6 +36,17 @@ class AVLTreeController:
         left_height = self._height(node.get_left())
         right_height = self._height(node.get_right())
         return left_height - right_height
+
+    # -------------------------
+    # Predecessor
+    # -------------------------
+
+    def _get_predecessor(self, node):
+        """Finds the inorder predecessor (max value in left subtree)."""
+        current = node.get_left()
+        while current.get_right() is not None:
+            current = current.get_right()
+        return current
 
     # ------------------------
     # Search
@@ -195,16 +206,7 @@ class AVLTreeController:
         # If node is already balanced, just return it
         return node
 
-    # -------------------------
-    # Predecessor
-    # -------------------------
 
-    def _get_predecessor(self, node):
-        """Finds the inorder predecessor (max value in left subtree)."""
-        current = node.get_left()
-        while current.get_right() is not None:
-            current = current.get_right()
-        return current
 
     # -------------------------
     # Replace nodes (for deleting)

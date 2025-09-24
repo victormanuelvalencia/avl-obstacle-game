@@ -9,7 +9,7 @@ class AVLNode:
         self._obstacle = obstacle  # Objeto Obstacle
         self.parent = parent
 
-        # Atributos para AVL
+        # AVL atribute
         self._height = 1
         self._left = None
         self._right = None
