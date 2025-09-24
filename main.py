@@ -1,8 +1,10 @@
 import pygame
+
+from controllers import avl_tree_controller
 from utils.file_admin import read_json
-from views.game import GameView
 from controllers.avl_tree_controller import AVLTreeController
 from models.avl_tree import AVLTree
+from views.integrated_game_view import IntegratedGameView
 from views.tree_view import TreeView
 
 if __name__ == "__main__":
@@ -46,11 +48,7 @@ if __name__ == "__main__":
     controller.print_range_query(x_min, x_max, y_min, y_max)
 
     # 5. Crear la vista del juego y ejecutarla
-    game = GameView(config)
-    game.run()
-
-    # 6. Graficar el árbol AVL
-    plotter = TreeView(controller)
-    plotter.plot()
+    integrated_view = IntegratedGameView(config, controller)  # ← CAMBIO AQUÍ
+    integrated_view.run()
 
     pygame.quit()
