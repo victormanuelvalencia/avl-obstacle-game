@@ -1,3 +1,6 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
 class TreeView:
     def __init__(self, controller):
         self.controller = controller

@@ -55,7 +55,7 @@ class AVLTreeController:
             # value
             return self._search(self.tree.get_root(), x1, y1)
 
-    def _search(self, current_node, x1, y1):
+    def _search(self, current_node: AVLNode, x1, y1):
         # Case: there is no nodes
         if current_node is None:
             return None
@@ -77,32 +77,36 @@ class AVLTreeController:
     # -------------------------
     # Insert
     # -------------------------
-    def insert(self, x1, y1, x2, y2, obstacle):
-        # Searching if it already exists
-        node = self.search(x1, y1)
+    def insert(self, data: dict):
+        """
+        Inserta un nuevo obstáculo en el árbol AVL.
+        data: diccionario cargado del JSON con los campos:
+              { "type": "...", "sprite": "...", "x1": .., "y1": .., "x2": .., "y2": .. }
+        """
+        # Crear obstáculo desde el JSON
+        obstacle_obj = Obstacle(data)
 
+        # Revisar si ya existe un nodo con esas coordenadas
+        node = self.search(obstacle_obj.rect.left, obstacle_obj.rect.top)
         if node is not None:
-            print(f"⚠️ Obstacle at ({x1}, {y1}) already exists.")
+            print(f"⚠️ Obstacle at ({obstacle_obj.rect.left}, {obstacle_obj.rect.top}) already exists.")
             return
+
+        # Crear el nuevo nodo AVL
+        new_node = AVLNode(obstacle_obj)
+
+        # Caso base: árbol vacío
+        if self.tree.get_root() is None:
+            self.tree.set_root(new_node)
         else:
-            # If it doesn't exist, then create the new node
-            new_node = AVLNode(x1, y1, x2, y2, obstacle)
+            root = self.tree.get_root()
+            root = self._insert(root, new_node, parent=None)
+            self.tree.set_root(root)
 
-            # If root is empty, insert here the new node
-            if self.tree.get_root() is None:
-                self.tree.set_root(new_node)
-            else:
-                # If there is a root, the calls Recursive insert
-                root = self.tree.get_root()
-                # From the root to the leafs
-                root = self._insert(root, new_node, parent = None)
-                # This is in case we need a rebalance, we update the new root
-                self.tree.set_root(root)
-
-    def _insert(self, root, new_node: AVLNode, parent: AVLNode):
+    def _insert(self, root: AVLNode, new_node: AVLNode, parent: AVLNode):
         # Caso base: espacio vacío → insertar aquí
-        if not root:
-            new_node.set_parent(parent)  # 👈 asignamos el padre
+        if root is None:
+            new_node.set_parent(parent)
             return new_node
 
         # Comparación por (x1, y1)
@@ -112,12 +116,53 @@ class AVLTreeController:
         else:
             root.set_right(self._insert(root.get_right(), new_node, root))
 
-        # Actualizar altura
+        # Actualizar altura del nodo actual
         self._update_height(root)
 
-        # Rebalancear
+        # Rebalancear si es necesario
         return self._rebalance(root)
 
+        # -------------------------
+        # Delete
+        # -------------------------
+
+        def delete(self, x1, y1):
+            """
+            Elimina el nodo con coordenadas (x1, y1).
+            """
+            node = self.search(x1, y1)
+            if node is None:
+                print(f"⚠️ Node at ({x1}, {y1}) not found.")
+                return
+            self._delete(node)
+
+        def _delete(self, node: AVLNode):
+            # --- Caso 1: nodo hoja ---
+            if node.get_left() is None and node.get_right() is None:
+                self._replace_node(node, None)
+
+            # --- Caso 2: nodo con dos hijos ---
+            elif node.get_left() is not None and node.get_right() is not None:
+                predecessor = self._get_predecessor(node)
+
+                if predecessor.get_parent() != node:
+                    self._replace_node(predecessor, predecessor.get_left())
+                    predecessor.set_left(node.get_left())
+                    if predecessor.get_left():
+                        predecessor.get_left().set_parent(predecessor)
+
+                self._replace_node(node, predecessor)
+                predecessor.set_right(node.get_right())
+                if predecessor.get_right():
+                    predecessor.get_right().set_parent(predecessor)
+
+            # --- Caso 3: nodo con un solo hijo ---
+            else:
+                child = node.get_left() if node.get_left() else node.get_right()
+                self._replace_node(node, child)
+
+            # Rebalancear hacia arriba
+            self._rebalance_upwards(node.get_parent())
     # -------------------------
     # Rebalance (insertion)
     # -------------------------
@@ -224,45 +269,7 @@ class AVLTreeController:
         if new_node is not None:
             new_node.set_parent(parent)
 
-    # -------------------------
-    # Delete
-    # -------------------------
 
-    def delete(self, x1, y1):
-        node = self.search(x1, y1)
-        if node is None:
-            print(f"⚠️ Node at ({x1}, {y1}) not found.")
-            return
-        self._delete(node)
-
-    def _delete(self, node):
-        # --- Case 1: node is a leaf ---
-        if node.get_left() is None and node.get_right() is None:
-            self._replace_node(node, None)
-
-        # --- Case 2: node has two children ---
-        elif node.get_left() is not None and node.get_right() is not None:
-            predecessor = self._get_predecessor(node)
-
-            # Si el predecesor no es hijo directo del nodo
-            if predecessor.get_parent() != node:
-                self._replace_node(predecessor, predecessor.get_left())
-                predecessor.set_left(node.get_left())
-                if predecessor.get_left():
-                    predecessor.get_left().set_parent(predecessor)
-
-            self._replace_node(node, predecessor)
-            predecessor.set_right(node.get_right())
-            if predecessor.get_right():
-                predecessor.get_right().set_parent(predecessor)
-
-        # --- Case 3: node has only one child ---
-        else:
-            child = node.get_left() if node.get_left() else node.get_right()
-            self._replace_node(node, child)
-
-        # Rebalance upward
-        self._rebalance_upwards(node.get_parent())
 
 # ?????????????
 
@@ -462,14 +469,10 @@ class AVLTreeController:
     # Load the nodes from the json
     # -------------------------
 
+
     def load_from_list(self, obstacles_list):
         for obs in obstacles_list:
             try:
-                x1 = obs["x1"]
-                y1 = obs["y1"]
-                x2 = obs["x2"]
-                y2 = obs["y2"]
-                obstacle_obj = Obstacle(obs)
-                self.insert(x1, y1, x2, y2, obstacle_obj)
+                self.insert(obs)  # 👈 ahora insert recibe directamente el diccionario
             except Exception as e:
                 print(f"[ERROR] No se pudo cargar obstáculo: {obs} -> {e}")

@@ -1,22 +1,16 @@
 from models.obstacle import Obstacle
 
 class AVLNode:
-    def __init__(self, x1, x2, y1, y2, obstacle, parent = None):
-        self._obstacle = obstacle  # Objeto Obstacle
+    """
+    Nodo de un árbol AVL que contiene un obstáculo.
+    Se ordena por (x1, y1).
+    """
+    def __init__(self, obstacle: Obstacle, parent=None):
+        self._obstacle = obstacle
         self.parent = parent
-
-        # AVL atribute
         self._height = 1
         self._left = None
         self._right = None
-
-    def to_dict(self):
-        return self._obstacle.to_dict()
-
-    @classmethod
-    def from_dict(cls, data: dict):
-        obstacle = Obstacle(data)  # Se crea el objeto Obstacle
-        return cls(obstacle)
 
     # Getters
     def get_x1(self): return self._obstacle.rect.left
@@ -34,6 +28,17 @@ class AVLNode:
     def set_left(self, node): self._left = node
     def set_right(self, node): self._right = node
     def set_parent(self, node): self.parent = node
+
+    def to_dict(self):
+        """Delegamos en Obstacle para exportar coordenadas y tipo."""
+        return self._obstacle.to_dict()
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """Crear nodo a partir de JSON."""
+        obstacle = Obstacle(data)
+        return cls(obstacle)
+
 
 class AVLTree:
     def __init__(self):
