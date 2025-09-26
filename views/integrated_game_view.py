@@ -2,27 +2,31 @@ import pygame
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_agg as agg
 import networkx as nx
+
+from controllers.obstacle_cleanup_controller import ObstacleCleanupController
 from models.obstacle import Obstacle
 from utils.file_admin import read_json
 from models.car import Car
 from controllers.car_controller import CarController
 
-
 class IntegratedGameView:
     def __init__(self, config, avl_controller):
         pygame.init()
         # Expandimos la ventana para incluir el árbol
-        self.WIDTH, self.HEIGHT = 1500, 800  # Más ancho para el árbol
+        self.WIDTH, self.HEIGHT = 1500, 768  # Más ancho para el árbol
         self.GAME_WIDTH = 1000  # Ancho original del juego
-        self.TREE_WIDTH = 500  # Ancho para el árbol
+        self.TREE_WIDTH = 500   # Ancho para el árbol
 
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Juego del Carrito con AVL - Vista Integrada")
         self.clock = pygame.time.Clock()
         self.config = config
 
-        # Controlador del árbol AVL
+        # Guardar el controlador AVL
         self.avl_controller = avl_controller
+
+        # ✅ Nuevo: controlador para limpiar obstáculos fuera de pantalla
+        self.cleanup_controller = ObstacleCleanupController(self.avl_controller)
 
         # Carrito (mantener tu configuración original)
         self.car = Car(
@@ -315,19 +319,17 @@ class IntegratedGameView:
         return 1 + self._count_nodes(node.get_left()) + self._count_nodes(node.get_right())
 
     def run(self):
-        """Loop principal integrado con interfaz mejorada"""
+        """Loop principal integrado con limpieza de obstáculos"""
         running = True
 
         while running:
-            # Limpiar pantalla completa con color base
             self.screen.fill((45, 45, 55))
 
-            # Manejar eventos (tu lógica original)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
-            # Control del carrito (tu código original)
+            # Control del carrito
             keys = pygame.key.get_pressed()
             if not self.car.is_jumping():
                 if keys[pygame.K_UP]:
@@ -339,6 +341,9 @@ class IntegratedGameView:
 
             self.car_controller.jump()
 
+            # ✅ Llamar al cleanup cada frame
+            self.cleanup_controller.cleanup_obstacles(self.WIDTH)
+
             # Dibujar ambas áreas
             self.draw_game_area()
             self.draw_tree_area()
@@ -347,3 +352,5 @@ class IntegratedGameView:
             self.clock.tick(60)
 
         pygame.quit()
+        #1
+

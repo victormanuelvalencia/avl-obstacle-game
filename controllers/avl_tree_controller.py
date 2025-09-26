@@ -122,47 +122,47 @@ class AVLTreeController:
         # Rebalancear si es necesario
         return self._rebalance(root)
 
-        # -------------------------
-        # Delete
-        # -------------------------
+    # -------------------------
+    # Delete
+    # -------------------------
 
-        def delete(self, x1, y1):
-            """
-            Elimina el nodo con coordenadas (x1, y1).
-            """
-            node = self.search(x1, y1)
-            if node is None:
-                print(f"⚠️ Node at ({x1}, {y1}) not found.")
-                return
-            self._delete(node)
+    def delete(self, x1, y1):
+        """
+        Elimina el nodo con coordenadas (x1, y1).
+        """
+        node = self.search(x1, y1)
+        if node is None:
+            print(f"⚠️ Node at ({x1}, {y1}) not found.")
+            return
+        self._delete(node)
 
-        def _delete(self, node: AVLNode):
-            # --- Caso 1: nodo hoja ---
-            if node.get_left() is None and node.get_right() is None:
-                self._replace_node(node, None)
+    def _delete(self, node: AVLNode):
+        # --- Caso 1: nodo hoja ---
+        if node.get_left() is None and node.get_right() is None:
+            self._replace_node(node, None)
 
-            # --- Caso 2: nodo con dos hijos ---
-            elif node.get_left() is not None and node.get_right() is not None:
-                predecessor = self._get_predecessor(node)
+        # --- Caso 2: nodo con dos hijos ---
+        elif node.get_left() is not None and node.get_right() is not None:
+            predecessor = self._get_predecessor(node)
 
-                if predecessor.get_parent() != node:
-                    self._replace_node(predecessor, predecessor.get_left())
-                    predecessor.set_left(node.get_left())
-                    if predecessor.get_left():
-                        predecessor.get_left().set_parent(predecessor)
+            if predecessor.get_parent() != node:
+                self._replace_node(predecessor, predecessor.get_left())
+                predecessor.set_left(node.get_left())
+                if predecessor.get_left():
+                    predecessor.get_left().set_parent(predecessor)
 
-                self._replace_node(node, predecessor)
-                predecessor.set_right(node.get_right())
-                if predecessor.get_right():
-                    predecessor.get_right().set_parent(predecessor)
+            self._replace_node(node, predecessor)
+            predecessor.set_right(node.get_right())
+            if predecessor.get_right():
+                predecessor.get_right().set_parent(predecessor)
 
-            # --- Caso 3: nodo con un solo hijo ---
-            else:
-                child = node.get_left() if node.get_left() else node.get_right()
-                self._replace_node(node, child)
+        # --- Caso 3: nodo con un solo hijo ---
+        else:
+            child = node.get_left() if node.get_left() else node.get_right()
+            self._replace_node(node, child)
 
-            # Rebalancear hacia arriba
-            self._rebalance_upwards(node.get_parent())
+        # Rebalancear hacia arriba
+        self._rebalance_upwards(node.get_parent())
     # -------------------------
     # Rebalance (insertion)
     # -------------------------
