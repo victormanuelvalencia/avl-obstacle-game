@@ -5,22 +5,26 @@ from controllers.car_controller import CarController
 class GameView:
     def __init__(self, config):
         self.WIDTH, self.HEIGHT = 1000, 800
-        self.screen = pygame.Surface((self.WIDTH, self.HEIGHT))  # Surface para integrarse
+        self.screen = pygame.Surface((self.WIDTH, self.HEIGHT))
         self.config = config
 
         # Carrito
+        road_y, road_height = 150, 400  # carretera más ancha
+        self.road_y = road_y
+        self.road_height = road_height
+
         self.car = Car(
             x1=50,
-            y1=self.HEIGHT // 2,
+            y1=road_y + road_height // 2 - 15,  # centrar en carretera
             x2=100,
-            y2=self.HEIGHT // 2 + 30,
+            y2=road_y + road_height // 2 + 15,
             energy=100,
             speed_x=0,
             refresh_time=config["refresh_time"],
             speed_y=5,
             jump_height=config["jump_height"],
         )
-        self.car_controller = CarController(self.car)
+        self.car_controller = CarController(self.car, road_y, road_height)
 
         # Imágenes
         width = self.car.get_x2() - self.car.get_x1()
@@ -38,11 +42,9 @@ class GameView:
         self.obstacles = []
 
     def set_obstacles(self, obstacles):
-        """Asignar obstáculos (lista de Obstacle)"""
         self.obstacles = obstacles
 
     def draw_game_area(self, surface):
-        """Dibuja el área de juego en el surface dado"""
         dx = self.car.get_speed_x() or 5
         self.road_offset -= dx
         if self.road_offset <= -self.WIDTH:
@@ -55,22 +57,18 @@ class GameView:
                              (0, y), (self.WIDTH, y))
 
         # Carretera
-        road_y, road_height = 200, 200
-        pygame.draw.rect(surface, (80, 80, 80), (self.road_offset, road_y, self.WIDTH, road_height))
-        pygame.draw.rect(surface, (80, 80, 80), (self.road_offset + self.WIDTH, road_y, self.WIDTH, road_height))
+        pygame.draw.rect(surface, (80, 80, 80), (self.road_offset, self.road_y, self.WIDTH, self.road_height))
+        pygame.draw.rect(surface, (80, 80, 80), (self.road_offset + self.WIDTH, self.road_y, self.WIDTH, self.road_height))
 
-        # Bordes y líneas
-        pygame.draw.rect(surface, (255, 255, 255), (self.road_offset, road_y, self.WIDTH, 5))
-        pygame.draw.rect(surface, (255, 255, 255), (self.road_offset, road_y + road_height - 5, self.WIDTH, 5))
-        pygame.draw.rect(surface, (255, 255, 255), (self.road_offset + self.WIDTH, road_y, self.WIDTH, 5))
-        pygame.draw.rect(surface, (255, 255, 255),
-                         (self.road_offset + self.WIDTH, road_y + road_height - 5, self.WIDTH, 5))
+        # Bordes
+        pygame.draw.rect(surface, (255, 255, 255), (self.road_offset, self.road_y, self.WIDTH, 5))
+        pygame.draw.rect(surface, (255, 255, 255), (self.road_offset, self.road_y + self.road_height - 5, self.WIDTH, 5))
 
+        # Líneas centrales
         line_width, line_length, line_gap = 4, 30, 20
-        center_y = road_y + road_height // 2
+        center_y = self.road_y + self.road_height // 2
         for x in range(self.road_offset, self.road_offset + self.WIDTH * 2, line_length + line_gap):
-            if x + line_length <= self.WIDTH:
-                pygame.draw.rect(surface, (255, 255, 0), (x, center_y - line_width // 2, line_length, line_width))
+            pygame.draw.rect(surface, (255, 255, 0), (x, center_y - line_width // 2, line_length, line_width))
 
         # Obstáculos
         for obs in self.obstacles:
@@ -82,7 +80,7 @@ class GameView:
                 self.car.decrease_energy(obs.damage)
                 obs.hit = True
 
-        # Carrito con sombra
+        # Carrito
         car_img = self.red_car if self.car.is_jumping() else self.blue_car
         car_x, car_y = self.car.get_x1(), self.car.get_y1() + self.car.get_jump_offset()
         if not self.car.is_jumping():
