@@ -1,21 +1,34 @@
 import pygame
 
 class CarController:
-    def __init__(self, car_model):
+    def __init__(self, car_model, road_y=None, road_height=None):
         self.car = car_model
         self.last_move_time = pygame.time.get_ticks()
-        self.jumping_up = True       # El próximo salto empieza subiendo
+        self.jumping_up = True
         self.jump_progress = 0
+
+        # Límites verticales de la carretera
+        car_height = self.car.get_y2() - self.car.get_y1()
+        if road_y is not None and road_height is not None:
+            self.min_y = road_y
+            self.max_y = road_y + road_height - car_height
+        else:
+            self.min_y = 0
+            self.max_y = 800 - car_height  # default
 
     def move_up(self):
         dy = self.car.get_speed_y()
-        self.car.set_y1(self.car.get_y1() - dy)
-        self.car.set_y2(self.car.get_y2() - dy)
+        new_y1 = max(self.min_y, self.car.get_y1() - dy)
+        new_y2 = new_y1 + (self.car.get_y2() - self.car.get_y1())
+        self.car.set_y1(new_y1)
+        self.car.set_y2(new_y2)
 
     def move_down(self):
         dy = self.car.get_speed_y()
-        self.car.set_y1(self.car.get_y1() + dy)
-        self.car.set_y2(self.car.get_y2() + dy)
+        new_y1 = min(self.max_y, self.car.get_y1() + dy)
+        new_y2 = new_y1 + (self.car.get_y2() - self.car.get_y1())
+        self.car.set_y1(new_y1)
+        self.car.set_y2(new_y2)
 
     def move_forward(self):
         now = pygame.time.get_ticks()
@@ -45,9 +58,3 @@ class CarController:
             self.jump_progress = 0
             self.car.set_jump_offset(0)
             self.jumping_up = True
-
-    def collide(self, obstacle, obstacle_types):
-        tipo = obstacle.get_obstacle()
-        damage = obstacle_types.get(tipo, 0)
-        self.car.set_energy(max(self.car.get_energy() - damage, 0))
-        print(f"⚡ Colisión con {tipo}, energía restante: {self.car.get_energy()}%")
