@@ -16,8 +16,6 @@ class GameCoordinator:
         # Controlador de limpieza de obstáculos
         self.cleanup_controller = ObstacleCleanupController(avl_controller)
 
-
-
         # Pantalla total
         self.WIDTH = self.game_view.GAME_WIDTH + self.tree_view.TREE_WIDTH
         self.HEIGHT = self.game_view.HEIGHT
@@ -81,4 +79,3 @@ class GameCoordinator:
             self.clock.tick(60)
 
         pygame.quit()
-
