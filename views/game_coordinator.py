@@ -35,38 +35,44 @@ class GameCoordinator:
         while running:
             self.screen.fill((45, 45, 55))
 
-            # Manejo de eventos
-            for event in pygame.event.get():
+            # === Manejo de eventos ===
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     running = False
 
-            # Manejo del carrito y obstáculos
-            self.game_view.handle_input()
+            # Pasar eventos al GameView (botón pausa, etc.)
+            self.game_view.handle_events(events)
 
-            # Actualizar obstáculos
-            dx = self.game_view.car.get_speed_x() or 5
-            self.game_view.update_obstacles(dx)
+            # === Lógica de pausa ===
+            if not self.game_view.button_controller.is_paused():
+                # Manejo del carrito y obstáculos
+                self.game_view.handle_input()
 
-            print("inicio de removed")
-            # Limpieza de obstáculos fuera de pantalla
-            removed = self.cleanup_controller.cleanup_obstacles(self.game_view.obstacles, self.game_view.GAME_WIDTH)
+                # Actualizar obstáculos
+                dx = self.game_view.car.get_speed_x() or 5
+                self.game_view.update_obstacles(dx)
 
-            print(removed)
-            if removed:
-                print("hola desde removed")
-                print("🗑️ Obstáculos eliminados de la pantalla:")
-                for obs in removed:
-                    print(f" - {obs.type} en ({obs.rect.left}, {obs.rect.top})")
+                # Limpieza de obstáculos fuera de pantalla
+                removed = self.cleanup_controller.cleanup_obstacles(
+                    self.game_view.obstacles,
+                    self.game_view.GAME_WIDTH
+                )
 
-                # Mostrar el estado actual del árbol
-                current_tree = self.avl_controller.inorder()
-                print("🌳 Estado actual del árbol AVL (in-order):")
-                print(" -> ".join(current_tree) if current_tree else " Árbol vacío")
+                if removed:
+                    print("🗑️ Obstáculos eliminados de la pantalla:")
+                    for obs in removed:
+                        print(f" - {obs.type} en ({obs.rect.left}, {obs.rect.top})")
 
-                # Regenerar la superficie del árbol para la vista
-                self.tree_view.tree_surface = self.tree_view.create_tree_surface()
+                    # Mostrar estado del árbol
+                    current_tree = self.avl_controller.inorder()
+                    print("🌳 Estado actual del árbol AVL (in-order):")
+                    print(" -> ".join(current_tree) if current_tree else " Árbol vacío")
 
-            # Dibujar áreas
+                    # Regenerar el árbol para la vista
+                    self.tree_view.tree_surface = self.tree_view.create_tree_surface()
+
+            # === Dibujar áreas (siempre, pausado o no) ===
             self.game_view.draw_game_area()
             self.tree_view.draw_tree_area()
 
@@ -75,3 +81,4 @@ class GameCoordinator:
             self.clock.tick(60)
 
         pygame.quit()
+

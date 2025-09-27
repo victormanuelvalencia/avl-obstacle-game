@@ -1,17 +1,24 @@
 import pygame
+
+from controllers.button_controller import ButtonController
 from models.car import Car
 from controllers.car_controller import CarController
 from models.obstacle import Obstacle
 from utils.file_admin import read_json
+from components.button import Button
 
 class GameView:
-    GAME_WIDTH = 1000
-    HEIGHT = 768
+    GAME_WIDTH = 900
+    HEIGHT = 700
 
     def __init__(self, config, obstacles_file="config/obstacles.json"):
         self.config = config
         self.screen = None
         self.clock = pygame.time.Clock()
+
+        # Botón de pausa y controlador
+        self.pause_button = Button(x=20, y=130, width=100, height=40, text="PAUSA")
+        self.button_controller = ButtonController()
 
         # Carrito
         self.car = Car(
@@ -39,16 +46,24 @@ class GameView:
             (width, height)
         )
 
+        # Fondo carretera
+        self.road_img = pygame.image.load("views/assets/5_carriles.png").convert_alpha()
         self.road_offset = 0
 
         # Obstáculos
         data = read_json(obstacles_file)
         self.obstacles = [Obstacle(obs) for obs in data["obstacles"]]
 
+        # Botón de pausa
+        self.pause_button = Button(x=20, y=130, width=100, height=40, text="PAUSA")
+        self.paused = False
+
     def set_screen(self, screen):
         self.screen = screen
 
     def handle_input(self):
+        if self.button_controller.is_paused():
+            return  # no mover el carro ni actualizar
         keys = pygame.key.get_pressed()
         if not self.car.is_jumping():
             if keys[pygame.K_UP]:
@@ -59,7 +74,17 @@ class GameView:
                 self.car.set_jumping(True)
         self.car_controller.jump()
 
+    def handle_events(self, events):
+        for event in events:
+            if event.type == pygame.QUIT:
+                return "quit"
+            # Delegar la lógica de pausa al ButtonController
+            self.button_controller.handle_pause_button(self.pause_button, event)
+        return None
+
     def update_obstacles(self, dx):
+        if self.button_controller.is_paused():
+            return
         for obs in self.obstacles:
             obs.update(dx)
             if (not self.car.is_jumping() and
@@ -69,29 +94,19 @@ class GameView:
                 obs.hit = True
 
     def draw_game_area(self):
-        # Fondo y carretera
-        for y in range(self.HEIGHT):
-            color_intensity = int(135 + (y / self.HEIGHT) * 50)
-            pygame.draw.line(self.screen, (color_intensity, color_intensity, color_intensity),
-                             (0, y), (self.GAME_WIDTH, y))
         dx = self.car.get_speed_x() or 5
-        self.road_offset -= dx
-        if self.road_offset <= -self.GAME_WIDTH:
-            self.road_offset = 0
 
-        road_y, road_height = 200, 200
-        pygame.draw.rect(self.screen, (80, 80, 80), (self.road_offset, road_y, self.GAME_WIDTH, road_height))
-        pygame.draw.rect(self.screen, (80, 80, 80),
-                         (self.road_offset + self.GAME_WIDTH, road_y, self.GAME_WIDTH, road_height))
-        pygame.draw.rect(self.screen, (255, 255, 255), (self.road_offset, road_y, self.GAME_WIDTH, 5))
-        pygame.draw.rect(self.screen, (255, 255, 255), (self.road_offset, road_y + road_height - 5, self.GAME_WIDTH, 5))
+        # Fondo carretera repetido en Y
+        img_height = self.road_img.get_height()
+        for y in range(0, self.HEIGHT, img_height):
+            self.screen.blit(self.road_img, (self.road_offset, y))
+            self.screen.blit(self.road_img, (self.road_offset + self.GAME_WIDTH, y))
 
-        # Líneas centrales
-        line_width, line_length, line_gap = 4, 30, 20
-        center_y = road_y + road_height // 2
-        for x in range(self.road_offset, self.road_offset + self.GAME_WIDTH * 2, line_length + line_gap):
-            if x + line_length <= self.GAME_WIDTH:
-                pygame.draw.rect(self.screen, (255, 255, 0), (x, center_y - line_width // 2, line_length, line_width))
+        # ❌ movimiento solo si NO está en pausa
+        if not self.button_controller.is_paused():
+            self.road_offset -= dx
+            if self.road_offset <= -self.GAME_WIDTH:
+                self.road_offset = 0
 
         # Obstáculos
         self.update_obstacles(dx)
@@ -107,6 +122,16 @@ class GameView:
             shadow_surface.set_alpha(50)
             self.screen.blit(shadow_surface, (car_x + 3, car_y + 3))
         self.screen.blit(car_img, (car_x, car_y))
+
+        # Botón pausa
+        self.pause_button.draw(self.screen)
+
+        # Mensaje de pausa
+        if self.button_controller.is_paused():
+            font = pygame.font.Font(None, 72)
+            text_surf = font.render("PAUSA", True, (255, 0, 0))
+            text_rect = text_surf.get_rect(center=(self.GAME_WIDTH // 2, self.HEIGHT // 2))
+            self.screen.blit(text_surf, text_rect)
 
         self.draw_ui()
 

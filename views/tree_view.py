@@ -5,7 +5,7 @@ import networkx as nx
 
 class TreeView:
     TREE_WIDTH = 500
-    HEIGHT = 768
+    HEIGHT = 700
 
     def __init__(self, avl_controller, game_width):
         self.avl_controller = avl_controller
@@ -31,9 +31,9 @@ class TreeView:
             labels = {n: n for n in graph.nodes()}
 
             fig, ax = plt.subplots(figsize=(4.5, 3.5), dpi=100)
-            nx.draw(graph, pos, with_labels=True, labels=labels, node_size=1200, node_color="lightblue",
-                    font_size=8, font_weight="bold", arrows=False, ax=ax, edge_color='gray', linewidths=2)
-            ax.set_title("Árbol AVL", fontsize=14)
+            nx.draw(graph, pos, with_labels=True, labels=labels, node_size=600, node_color="lightblue",
+                    font_size=6, font_weight="bold", arrows=False, ax=ax, edge_color='gray', linewidths=2)
+            ax.set_title("Árbol AVL", fontsize=10)
             ax.axis('off')
 
         canvas = agg.FigureCanvasAgg(fig)
