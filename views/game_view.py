@@ -12,8 +12,8 @@ class GameView:
     Handles rendering the road, car, obstacles, UI, and pause logic.
     """
 
-    GAME_WIDTH = 900
-    HEIGHT = 700
+    GAME_WIDTH = 800
+    HEIGHT = 800
 
     def __init__(self, config, obstacles_file="config/obstacles.json"):
         """

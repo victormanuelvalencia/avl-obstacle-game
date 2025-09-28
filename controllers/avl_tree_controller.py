@@ -236,38 +236,43 @@ class AVLTreeController:
         return [f"({node.get_x1()}, {node.get_y1()})"] + self._preorder_recursive(
             node.get_left()) + self._preorder_recursive(node.get_right())
 
-    def range_query(self, x1, x2, y1, y2):
-        """Return a list of nodes whose (x1, y1) are inside the given rectangle."""
-        result = []
-        self._range_query(self.tree.get_root(), x1, x2, y1, y2, result)
+    def range_query(self, node, x_min, x_max, y_min, y_max, result=None):
+        """
+        Recorre el árbol en inorden y guarda los obstáculos dentro del rango.
+        """
+        if result is None:
+            result = []
+
+        if not node:
+            return result
+
+        # Izquierda
+        if node.get_left():
+            self.range_query(node.get_left(), x_min, x_max, y_min, y_max, result)
+
+        # Nodo actual
+        if (x_min <= node.get_x1() <= x_max and
+            y_min <= node.get_y1() <= y_max):
+            result.append((node.get_x1(), node.get_y1()))
+
+        # Derecha
+        if node.get_right():
+            self.range_query(node.get_right(), x_min, x_max, y_min, y_max, result)
+
         return result
 
-    def _range_query(self, node, x1, x2, y1, y2, result):
-        if not node:
-            return
-        if node.get_x1() > x1:
-            self._range_query(node.get_left(), x1, x2, y1, y2, result)
-        if x1 <= node.get_x1() <= x2 and y1 <= node.get_y1() <= y2:
-            result.append({
-                "x1": node.get_x1(),
-                "y1": node.get_y1(),
-                "x2": node.get_x2(),
-                "y2": node.get_y2(),
-                "tipo": node.get_obstacle()
-            })
-        if node.get_x1() < x2:
-            self._range_query(node.get_right(), x1, x2, y1, y2, result)
+    def print_range_query(self, x_min, x_max, y_min, y_max):
+        """
+        Imprime en consola los obstáculos dentro del rango.
+        """
+        root = self.tree.get_root()
+        if not root:
+            print("🌳 Árbol vacío")
+            return []
 
-    def print_range_query(self, x1, x2, y1, y2):
-        """Print obstacles within the given range."""
-        resultados = self.range_query(x1, x2, y1, y2)
-        print(f"\n🔎 Obstacles in x=[{x1},{x2}], y=[{y1},{y2}]:")
-        if not resultados:
-            print(" (None found)")
-            return
-        for obs in resultados:
-            print(f" - Object: {obs['tipo']} | Coords: ({obs['x1']}, {obs['y1']}) - ({obs['x2']}, {obs['y2']})")
-
+        result = self.range_query(root, x_min, x_max, y_min, y_max)
+        print(f"📌 Obstáculos en rango ({x_min},{x_max},{y_min},{y_max}): {result}")
+        return result
     def load_from_list(self, obstacles_list):
         """Load multiple obstacles from a list of dictionaries."""
         for obs in obstacles_list:
