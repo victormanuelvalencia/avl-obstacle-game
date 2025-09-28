@@ -1,10 +1,22 @@
 import pygame
 
-def get_screen_config(scale=0.8, game_ratio=0.65):
+def get_screen_config(scale: float = 0.8, game_ratio: float = 0.65) -> dict:
     """
-    Calcula y retorna las dimensiones de la ventana.
-    - scale: porcentaje de la pantalla usado (ej. 0.8 → 80%)
-    - game_ratio: proporción del área de juego frente al árbol
+    Calculate and return screen dimensions for the game window.
+
+    Args:
+        scale (float, optional): Percentage of the screen to use
+            (e.g., 0.8 → 80%). Defaults to 0.8.
+        game_ratio (float, optional): Proportion of the total width
+            allocated to the game area (the rest is used for the tree view).
+            Defaults to 0.65.
+
+    Returns:
+        dict: Dictionary with the following keys:
+            - "width" (int): Total window width.
+            - "height" (int): Total window height.
+            - "game_width" (int): Width allocated to the game area.
+            - "tree_width" (int): Width allocated to the tree view.
     """
     info = pygame.display.Info()
 
