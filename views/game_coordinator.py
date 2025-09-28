@@ -61,8 +61,11 @@ class GameCoordinator:
             for event in events:
                 if event.type == pygame.QUIT:
                     self.running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # pasar clics al TreeView (botones)
+                    self.tree_view.handle_click(event.pos)
 
-            # Pasar eventos al GameView
+            # Pasar eventos al GameView (botón pausa, etc.)
             self.game_view.handle_events(events)
 
             # === Lógica principal ===
