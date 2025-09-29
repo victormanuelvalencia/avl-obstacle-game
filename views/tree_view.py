@@ -1,11 +1,9 @@
-# views/tree_view.py
 import sys
 import time
 import pygame
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_agg as agg
 import networkx as nx
-
 
 class TreeView:
     TREE_WIDTH = 500
@@ -188,9 +186,9 @@ class TreeView:
 
         for text, rect in self.buttons.items():
             if rect.collidepoint(pos):
-                if text == "Inorden":
+                if text == "Inorder":
                     recorrido = self.avl_controller.inorder()
-                elif text == "Preorden":
+                elif text == "Preorder":
                     recorrido = self.avl_controller.preorder()
                 else:
                     recorrido = self.avl_controller.postorder()
@@ -293,4 +291,3 @@ class TreeView:
                                          vert_loc=vert_loc - vert_gap, xcenter=nextx,
                                          pos=pos, parent=root)
         return pos
-

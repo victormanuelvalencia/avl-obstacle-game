@@ -1,9 +1,5 @@
-
-# views/game_coordinator.py
 import pygame
 import threading
-import time
-
 from views.game_view import GameView
 from views.tree_view import TreeView
 from controllers.obstacle_cleanup_controller import ObstacleCleanupController
@@ -28,7 +24,7 @@ class GameCoordinator:
         pygame.display.set_caption("Juego Carrito + Árbol AVL")
         self.clock = pygame.time.Clock()
 
-        # Pasar pantalla
+        # Pasar pantalla a las vistas
         self.game_view.set_screen(self.screen)
         self.tree_view.set_screen(self.screen)
 
@@ -43,7 +39,6 @@ class GameCoordinator:
     def _tree_loop(self):
         """Hilo encargado de regenerar la vista del árbol sin frenar el juego."""
         while self.running:
-            # Esperar señal de actualización
             if self.tree_update_event.wait(timeout=0.1):
                 try:
                     self.tree_view.tree_surface = self.tree_view.create_tree_surface()
@@ -73,28 +68,31 @@ class GameCoordinator:
 
             # === Lógica principal ===
             if not self.game_view.button_controller.is_paused():
-                self.game_view.handle_input()
 
-                dx = self.game_view.car.get_speed_x() or 5
-                self.game_view.update_obstacles(dx)
+                # 🚫 Solo procesamos lógica si el juego NO terminó
+                if not (self.game_view.game_over or self.game_view.game_won):
+                    self.game_view.handle_input()
 
-                # Limpieza de obstáculos
-                removed = self.cleanup_controller.cleanup_obstacles(
-                    self.game_view.obstacles,
-                    self.game_view.GAME_WIDTH
-                )
+                    dx = self.game_view.car.get_speed_x() or 5
+                    self.game_view.update_obstacles(dx)
 
-                if removed:
-                    print("🗑️ Obstáculos eliminados de la pantalla:")
-                    for obs in removed:
-                        print(f" - {obs.type} en ({obs.rect.left}, {obs.rect.top})")
+                    # Limpieza de obstáculos solo mientras el juego sigue
+                    removed = self.cleanup_controller.cleanup_obstacles(
+                        self.game_view.obstacles,
+                        self.game_view.GAME_WIDTH
+                    )
 
-                    print("🌳 Estado actual del árbol AVL (in-order):")
-                    current_tree = self.avl_controller.inorder()
-                    print(" -> ".join(current_tree) if current_tree else " Árbol vacío")
+                    if removed:
+                        print("🗑️ Obstáculos eliminados de la pantalla:")
+                        for obs in removed:
+                            print(f" - {obs.type} en ({obs.rect.left}, {obs.rect.top})")
 
-                    # ✅ Pedir al hilo del árbol que regenere el surface
-                    self.tree_update_event.set()
+                        print("🌳 Estado actual del árbol AVL (in-order):")
+                        current_tree = self.avl_controller.inorder()
+                        print(" -> ".join(current_tree) if current_tree else " Árbol vacío")
+
+                        # ✅ Señal para regenerar el árbol
+                        self.tree_update_event.set()
 
             # === Dibujar ===
             self.game_view.draw_game_area()
@@ -107,5 +105,3 @@ class GameCoordinator:
         self.running = False
         self.tree_update_event.set()
         pygame.quit()
-
-
