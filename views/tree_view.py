@@ -98,7 +98,8 @@ class TreeView:
         """
         root = self.avl_controller.tree.get_root()
         if not root:
-            fig, ax = plt.subplots(figsize=(22, 21), dpi=80)
+            # Usar tamaño pequeño para que no expanda toda la ventana
+            fig, ax = plt.subplots(figsize=(6, 5), dpi=80)
             ax.text(0.5, 0.5, '🌳 Empty Tree', ha='center', va='center',
                     fontsize=20, transform=ax.transAxes, color='gray')
             ax.axis('off')
@@ -107,7 +108,6 @@ class TreeView:
             self._add_edges(graph, root)
             root_id = f"({root.get_x1()},{root.get_y1()})"
 
-            # Hierarchical layout without pygraphviz
             pos = self.hierarchy_pos(graph, root=root_id)
             labels = {n: n for n in graph.nodes()}
 

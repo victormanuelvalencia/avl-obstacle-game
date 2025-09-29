@@ -34,7 +34,7 @@ class Obstacle:
 
         # Damage based on type
         damage_map = {
-            "cone": 5,
+            "cone": 20,
             "rock": 15,
             "oil": 10,
             "hole": 20,

@@ -1,6 +1,6 @@
 {
     "config": {
-        "road_length": 10000,
+        "road_length": 20000,
         "car_speed": 10,
         "refresh_time": 2000,
         "jump_height": 100

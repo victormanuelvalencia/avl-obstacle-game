@@ -48,7 +48,7 @@ class AVLTreeController:
             AVLNode | None: The node if found, otherwise None.
         """
         if self.tree.get_root() is None:
-            print("The tree is empty.")
+
             return None
         return self._search(self.tree.get_root(), x1, y1)
 
