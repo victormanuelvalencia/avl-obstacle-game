@@ -32,7 +32,7 @@ class GameView:
         self.distance = 0  # Distance traveled
 
         # Pause button and controller
-        self.pause_button = Button(x=20, y=130, width=100, height=40, text="PAUSE")
+        self.pause_button = Button(x=self.GAME_WIDTH - 120, y=20, width=100, height=40, text="PAUSE")
         self.button_controller = ButtonController()
 
         # Car setup (fixed X position)
@@ -62,7 +62,7 @@ class GameView:
         )
 
         # Road background
-        self.road_img = pygame.image.load("views/assets/5_carriles.png").convert_alpha()
+        self.road_img = pygame.image.load("views/assets/5_lines.png").convert_alpha()
         self.road_offset = 0
 
         # Load obstacles
@@ -208,11 +208,11 @@ class GameView:
         font_info = pygame.font.Font(None, 24)
 
         # Energy panel
-        panel_surface = pygame.Surface((280, 140))  # taller to fit progress bar
+        panel_surface = pygame.Surface((330, 140))  # taller to fit progress bar
         panel_surface.fill((0, 0, 0))
         panel_surface.set_alpha(180)
         self.screen.blit(panel_surface, (10, 10))
-        pygame.draw.rect(self.screen, (100, 150, 255), (10, 10, 280, 140), 2)
+        pygame.draw.rect(self.screen, (100, 150, 255), (10, 10, 330, 140), 2)
 
         # Energy text
         energy = self.car.get_energy()
@@ -239,7 +239,7 @@ class GameView:
         status_text = font_info.render(jump_status, True, status_color)
         self.screen.blit(status_text, (20, 70))
 
-        # --- Progress bar (distance traveled) ---
+        # Progress bar (distance traveled)
         progress_text = font_title.render("PROGRESS", True, (255, 255, 255))
         self.screen.blit(progress_text, (20, 100))
 

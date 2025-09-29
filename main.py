@@ -8,28 +8,28 @@ from views.game_coordinator import GameCoordinator
 if __name__ == "__main__":
     pygame.init()
 
-    # 1. Mostrar menú de inicio
+    # 1. Display the main menu
     menu = MenuView()
-    start_game = menu.run()  # Espera hasta que el jugador elija "JUGAR" o cierre
+    start_game = menu.run()  # Wait until the player selects "PLAY" or closes the window
 
     if start_game:
-        # 2. Crear árbol y controlador
+        # 2. Create the AVL tree and its controller
         tree = AVLTree()
         controller = AVLTreeController(tree)
 
-        # 3. Leer configuración desde JSON
+        # 3. Load game configuration from JSON
         data = read_json("config/settings.json")
         config = data["config"]
 
-        # 4. Leer obstáculos desde JSON y cargarlos en el árbol
+        # 4. Load obstacles from JSON and insert them into the tree
         obs_data = read_json("config/obstacles.json")
         try:
             controller.load_from_list(obs_data["obstacles"])
-            print("Obstáculos cargados correctamente.")
+            print("Obstacles loaded successfully.")
         except Exception as e:
-            print(f"[ERROR] No se pudieron cargar los obstáculos: {e}")
+            print(f"[ERROR] Could not load obstacles: {e}")
 
-        # 5. Crear coordinador del juego y ejecutar
+        # 5. Create the game coordinator and run the game
         coordinator = GameCoordinator(config, controller)
         coordinator.run()
 

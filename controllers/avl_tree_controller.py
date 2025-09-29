@@ -237,44 +237,40 @@ class AVLTreeController:
             node.get_left()) + self._preorder_recursive(node.get_right())
 
     def range_query(self, node, x_min, x_max, y_min, y_max, result=None):
-        """
-        Recorre el árbol en inorden y guarda los obstáculos dentro del rango.
-        """
+        """In-order traversal to collect nodes within a coordinate range."""
         if result is None:
             result = []
 
         if not node:
             return result
 
-        # Izquierda
+        # Left subtree
         if node.get_left():
             self.range_query(node.get_left(), x_min, x_max, y_min, y_max, result)
 
-        # Nodo actual
-        if (x_min <= node.get_x1() <= x_max and
-            y_min <= node.get_y1() <= y_max):
+        # Current node
+        if x_min <= node.get_x1() <= x_max and y_min <= node.get_y1() <= y_max:
             result.append((node.get_x1(), node.get_y1()))
 
-        # Derecha
+        # Right subtree
         if node.get_right():
             self.range_query(node.get_right(), x_min, x_max, y_min, y_max, result)
 
         return result
 
     def print_range_query(self, x_min, x_max, y_min, y_max):
-        """
-        Imprime en consola los obstáculos dentro del rango.
-        """
+        """Print nodes within the given range."""
         root = self.tree.get_root()
         if not root:
-            print("🌳 Árbol vacío")
+            print("🌳 Empty tree")
             return []
 
         result = self.range_query(root, x_min, x_max, y_min, y_max)
-        print(f"📌 Obstáculos en rango ({x_min},{x_max},{y_min},{y_max}): {result}")
+        print(f"📌 Obstacles in range ({x_min}, {x_max}, {y_min}, {y_max}): {result}")
         return result
+
     def load_from_list(self, obstacles_list):
-        """Load multiple obstacles from a list of dictionaries."""
+        """Load multiple obstacles into the tree."""
         for obs in obstacles_list:
             try:
                 self.insert(obs)
